@@ -72,7 +72,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ('id','team_name', 'player_1', 'player_2', 'player_3')
+        fields = ('id', 'team_name', 'user')
 
 
 class ScoreSerializer(serializers.ModelSerializer):
@@ -86,7 +86,7 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ('match_uuid','team_1', 'team_2', 'match_type')
+        fields = ('match_uuid', 'team_1', 'team_2', 'match_type', 'tournament')
         read_only_field = ('match_uuid', )
 
 
@@ -94,7 +94,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tournament
-        fields = ('tour_year', 'tour_type', 'match')
+        fields = ('tour_start_date', 'tour_end_date', 'tour_type')
 
 
 

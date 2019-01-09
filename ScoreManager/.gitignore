@@ -1,0 +1,15 @@
+# Directories
+
+**/migrations
+
+
+# Files
+
+*.pyc
+.idea/workspace.xml
+.idea/vcs.xml
+
+
+# Database
+
+db.sqlite3

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'rest_auth.registration'
+    'rest_auth.registration',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -166,3 +167,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+
+# Django Import Export
+IMPORT_EXPORT_USE_TRANSACTIONS = True
