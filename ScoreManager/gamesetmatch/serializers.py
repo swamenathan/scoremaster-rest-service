@@ -21,8 +21,7 @@ class RegisterSerializer(serializers.Serializer):
         email = get_adapter().clean_email(email)
         if allauth_settings.UNIQUE_EMAIL:
             if email and email_address_exists(email):
-                raise serializers.ValidationError(
-                    _("A user is already registered with this e-mail address."))
+                raise serializers.ValidationError("A user is already registered with this e-mail address.")
         return email
 
     def validate_password1(self, password):
@@ -30,7 +29,7 @@ class RegisterSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
+            raise serializers.ValidationError("The two password fields didn't match.")
         return data
 
     def custom_signup(self, request, user):
@@ -54,6 +53,10 @@ class RegisterSerializer(serializers.Serializer):
         setup_user_email(request, user, [])
         return user
 
+    def to_representation(self, instance):
+        validated_data = super(RegisterSerializer, self).to_representation(instance)
+        validated_data['id'] = instance.id;
+        return validated_data
 
 class PlayerProfileSerializer(serializers.ModelSerializer):
 
@@ -72,8 +75,31 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ('id', 'team_name', 'user')
+        fields = ('id', 'team_name', 'partner_player')
 
+    def validate(self, attrs):
+        if 'partner_player' in attrs:
+            if attrs['partner_player'] == self.context['request'].user:
+                raise serializers.ValidationError("A team cannot have duplicate users")
+        return attrs
+
+    def to_internal_value(self, data):
+        validated_data = super(TeamSerializer, self).to_internal_value(data)
+        validated_data['main_player'] = self.context['request'].user
+        return validated_data
+
+    def validate_team_name(self, value):
+        """
+        Check if two team names are the same
+        :param value:
+        :return:
+        """
+        if Team.objects.filter(team_name=value):
+            raise serializers.ValidationError("Team of the same name exits, choose another name")
+        return value
+
+
+    #TODO: Two teams cannot have the same members
 
 class ScoreSerializer(serializers.ModelSerializer):
 

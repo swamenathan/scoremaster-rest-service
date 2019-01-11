@@ -22,8 +22,9 @@ class PlayerProfile(models.Model):
 
 
 class Team(models.Model):
-    team_name = models.CharField(max_length=64, blank=False, default='Default Team')
-    user = models.ManyToManyField(User)
+    team_name = models.CharField(max_length=64, blank=False, default='')
+    main_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='main_player', blank=False, default='', null=False)
+    partner_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='partner_player', blank=True, default=None, null=True)
 
 
 class Tournament(models.Model):
@@ -50,7 +51,7 @@ class Match(models.Model):
         (SEEDING, 'Seeding'),
         (KNOCKOUT, 'Knockout')
     )
-    match_uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    match_uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     match_type = models.CharField(max_length=2, choices=MATCH_TYPE_CHOICES, default=SEEDING)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, default='')
     team_1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='match_team1', default='')
@@ -58,7 +59,7 @@ class Match(models.Model):
 
 
 class Score(models.Model):
-    match = models.OneToOneField(Match, on_delete=models.CASCADE, related_name='match_score', default='')
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_score', default='')
     team1_set1 = models.CharField(max_length=2, blank=True, default='')
     team2_set1 = models.CharField(max_length=2, blank=True, default='')
     team1_set2 = models.CharField(max_length=2, blank=True, default='')

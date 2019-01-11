@@ -18,8 +18,8 @@ class PlayerListView(APIView):
     authentication_classes = (JSONWebTokenAuthentication, )
 
     def get(self, request, format=None):
-        players = PlayerProfile.objects.all()
-        serializer = PlayerProfileSerializer(players, many=True)
+        players = User.objects.all()
+        serializer = RegisterSerializer(players, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -62,11 +62,11 @@ class TeamListView(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = TeamSerializer(data=request.data)
+        serializer = TeamSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MatchListView(APIView):
@@ -104,6 +104,7 @@ class PlayerList(generics.ListAPIView):
     serializer_class = PlayerProfileSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_fields = ('division', )
+
 
 class ScoreListView(APIView):
 
