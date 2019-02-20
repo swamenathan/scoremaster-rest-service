@@ -26,7 +26,18 @@ SECRET_KEY = '8mmf1sd)$%#sl!sg-%p1roex&zv@=_prk&=vqw^+*)wgh3!yyy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:4200'
+)
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1'
+]
 
 
 # Application definition
@@ -41,12 +52,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'rest_framework',
     'rest_auth',
-    'gamesetmatch',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'gamesetmatch',
     'rest_auth.registration',
-    'import_export'
+    'import_export',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -57,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'scoremanager.urls'
@@ -131,8 +144,8 @@ JWT_AUTH = {
 }
 
 AUTHENTICATION_BACKENDS = (
-   "django.contrib.auth.backends.ModelBackend",
-   "allauth.account.auth_backends.AuthenticationBackend"
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 REST_AUTH_REGISTER_SERIALIZERS = {
@@ -164,9 +177,15 @@ REST_USE_JWT = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 
 # Django Import Export
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+
+AUTH_USER_MODEL = 'gamesetmatch.TennisUser'

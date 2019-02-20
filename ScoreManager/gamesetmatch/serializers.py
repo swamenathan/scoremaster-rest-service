@@ -37,7 +37,6 @@ class RegisterSerializer(serializers.Serializer):
 
     def get_cleaned_data(self):
         return {
-            'username': self.validated_data.get('username', ''),
             'password1': self.validated_data.get('password1', ''),
             'email': self.validated_data.get('email', ''),
             'first_name': self.validated_data.get('first_name', ''),
@@ -53,10 +52,20 @@ class RegisterSerializer(serializers.Serializer):
         setup_user_email(request, user, [])
         return user
 
-    def to_representation(self, instance):
-        validated_data = super(RegisterSerializer, self).to_representation(instance)
-        validated_data['id'] = instance.id;
-        return validated_data
+
+    # def to_internal_value(self, data):
+    #     validate_data = super(RegisterSerializer, self).to_internal_value(data)
+    #     print(validate_data)
+    #     validate_data['is_active'] = False
+    #     print(validate_data)
+    #     return validate_data
+    #
+    # def to_representation(self, instance):
+    #     validated_data = super(RegisterSerializer, self).to_representation(instance)
+    #     print('instance = ', instance)
+    #     validated_data['is_active'] = instance['is_active']
+    #     print('validated_data = ', validated_data)
+    #     return validated_data
 
 class PlayerProfileSerializer(serializers.ModelSerializer):
 
@@ -114,6 +123,12 @@ class MatchSerializer(serializers.ModelSerializer):
         model = Match
         fields = ('match_uuid', 'team_1', 'team_2', 'match_type', 'tournament')
         read_only_field = ('match_uuid', )
+
+    def to_representation(self, instance):
+        validated_data = super(MatchSerializer, self).to_representation(instance)
+        score = Score.objects.filter(match=instance)
+        validated_data['score'] = ScoreSerializer(score[0]).data
+        return validated_data
 
 
 class TournamentSerializer(serializers.ModelSerializer):

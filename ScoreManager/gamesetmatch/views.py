@@ -2,10 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import  permission_classes
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from  django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework import generics
-from gamesetmatch.models import *
 from gamesetmatch.serializers import *
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,7 +16,7 @@ class PlayerListView(APIView):
     authentication_classes = (JSONWebTokenAuthentication, )
 
     def get(self, request, format=None):
-        players = User.objects.all()
+        players = settings.AUTH_USER_MODEL.objects.all()
         serializer = RegisterSerializer(players, many=True)
         return Response(serializer.data)
 
@@ -50,6 +48,16 @@ class PlayerDetailView(APIView):
         playerpofile = get_object_or_404(PlayerProfile, pk=pk, player=request.user)
         playerpofile.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class TeamDetailView(APIView):
+
+    authentication_classes = (JSONWebTokenAuthentication, )
+
+    def get(self, request, main_player):
+        team = get_object_or_404(Team, main_player=main_player)
+        serializer = TeamSerializer(instance=team)
+        return Response(serializer.data, status.HTTP_200_OK)
 
 
 class TeamListView(APIView):
@@ -106,9 +114,24 @@ class PlayerList(generics.ListAPIView):
     filter_fields = ('division', )
 
 
+class ScoreDetailView(APIView):
+
+    authentication_classes = (JSONWebTokenAuthentication, )
+
+    def get(self, request, match):
+        score = get_object_or_404(Score, match=match)
+        serializer = ScoreSerializer(instance=score, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class ScoreListView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+
+    def get(self, request):
+        score = Score.objects.filter()
+        serializer = ScoreSerializer(score, many=True)
+        return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = ScoreSerializer(data=request.data)

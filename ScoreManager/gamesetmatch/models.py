@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from datetime import *
 import uuid
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -14,7 +16,7 @@ class PlayerProfile(models.Model):
         (DIV_2, 'Division 2'),
         (DIV_3, 'Division 3')
     )
-    player = models.OneToOneField(User, on_delete=models.CASCADE, null=False, related_name='user')
+    player = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='user')
     division = models.CharField(max_length=16, choices=DIVISION_CHOICES, default=DIV_3)
     seeding_points = models.CharField(max_length=3, blank=True, default='')
     rr_points = models.CharField(max_length=2, blank=True, default='')
@@ -23,8 +25,8 @@ class PlayerProfile(models.Model):
 
 class Team(models.Model):
     team_name = models.CharField(max_length=64, blank=False, default='')
-    main_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='main_player', blank=False, default='', null=False)
-    partner_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='partner_player', blank=True, default=None, null=True)
+    main_player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='main_player', blank=False, default='', null=False)
+    partner_player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='partner_player', blank=True, default=None, null=True)
 
 
 class Tournament(models.Model):
@@ -66,3 +68,46 @@ class Score(models.Model):
     team2_set2 = models.CharField(max_length=2, blank=True, default='')
     team1_set3 = models.CharField(max_length=2, blank=True, default='')
     team2_set3 = models.CharField(max_length=2, blank=True, default='')
+
+
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def _create_user(self, email, password, **extra_fields):
+        """
+        Create and save a user with the given username, email, and password.
+        """
+        if not email:
+            raise ValueError('The given email must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self._create_user(email, password, **extra_fields)
+
+
+class TennisUser(AbstractUser):
+
+    username = None
+    email = models.EmailField('email address', unique=True, max_length = 255)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
