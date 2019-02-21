@@ -5,6 +5,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
 from rest_framework import generics
 from gamesetmatch.serializers import *
+from gamesetmatch.permissions import *
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -14,6 +15,7 @@ class PlayerListView(APIView):
     List All Players
     """
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request, format=None):
         players = settings.AUTH_USER_MODEL.objects.all()
@@ -29,7 +31,9 @@ class PlayerListView(APIView):
 
 
 class PlayerDetailView(APIView):
+
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request, pk):
         playerprofile = get_object_or_404(PlayerProfile, pk=pk, player=request.user)
@@ -53,6 +57,7 @@ class PlayerDetailView(APIView):
 class TeamDetailView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request, main_player):
         team = get_object_or_404(Team, main_player=main_player)
@@ -63,6 +68,7 @@ class TeamDetailView(APIView):
 class TeamListView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request):
         teams = Team.objects.all()
@@ -80,6 +86,7 @@ class TeamListView(APIView):
 class MatchListView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request):
         matches = Match.objects.all()
@@ -97,6 +104,7 @@ class MatchListView(APIView):
 class MatchList(generics.ListAPIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     queryset = Match.objects.all()
     serializer_class = MatchSerializer
@@ -107,6 +115,8 @@ class MatchList(generics.ListAPIView):
 class PlayerList(generics.ListAPIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
+
 
     queryset = PlayerProfile.objects.all()
     serializer_class = PlayerProfileSerializer
@@ -117,6 +127,7 @@ class PlayerList(generics.ListAPIView):
 class ScoreDetailView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request, match):
         score = get_object_or_404(Score, match=match)
@@ -127,6 +138,7 @@ class ScoreDetailView(APIView):
 class ScoreListView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
 
     def get(self, request):
         score = Score.objects.filter()

@@ -106,6 +106,14 @@ class TennisUser(AbstractUser):
 
     username = None
     email = models.EmailField('email address', unique=True, max_length = 255)
+    is_verified = models.BooleanField(
+        _('verified'),
+        default=False,
+        help_text=_(
+            'Designates whether this user should be treated as verified. '
+            'Unselect this if not a valid user.'
+        ),
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
