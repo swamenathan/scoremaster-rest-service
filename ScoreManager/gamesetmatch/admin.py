@@ -15,6 +15,8 @@ class TeamResource(resources.ModelResource):
 
     class Meta:
         model = Team
+        fields = ('team_name', 'main_player__first_name', 'partner_player__first_name', 'seeding_points', 'rr_points')
+
 
 
 class TeamAdmin(ImportExportModelAdmin):
@@ -28,6 +30,8 @@ class MatchResource(resources.ModelResource):
 
     class Meta:
         model = Match
+        fields = ('tournament__tour_name', 'match_date', 'match_type', 'team_1__team_name', 'team_2__team_name', 'team1_set1', 'team2_set1', 'team1_set2', 'team2_set2', 'team1_set3', 'team2_set3')
+
 
 class TournamentAdmin(admin.ModelAdmin):
 
