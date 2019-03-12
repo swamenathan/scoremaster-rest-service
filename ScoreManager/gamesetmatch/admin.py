@@ -1,19 +1,46 @@
 from django.contrib import admin
 from .models import *
-from import_export.admin import ImportExportActionModelAdmin
+from import_export.admin import ImportExportActionModelAdmin, ImportExportModelAdmin
 from import_export import resources
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 
-class PlayerProfileResource(resources.ModelResource):
+class PlayerProfileAdmin(admin.ModelAdmin):
+
+    list_display = ('player', 'phone')
+
+
+class TeamResource(resources.ModelResource):
+
     class Meta:
-        model = PlayerProfile
-        fields = ('player__first_name','division', )
+        model = Team
 
 
-class PlayerProfileAdmin(ImportExportActionModelAdmin):
-    resource_class = PlayerProfileResource
+class TeamAdmin(ImportExportModelAdmin):
+
+    resource_class = TeamResource
+
+    list_display = ('team_name', 'main_player', 'partner_player', 'seeding_points', 'rr_points')
+
+
+class MatchResource(resources.ModelResource):
+
+    class Meta:
+        model = Match
+
+class TournamentAdmin(admin.ModelAdmin):
+
+    list_display = ('tour_name', 'tour_type', 'tour_start_date', 'tour_end_date')
+
+
+class MatchAdmin(ImportExportModelAdmin):
+
+    resource_class = MatchResource
+
+    list_display = ('match_uuid', 'match_date', 'team_1', 'team_2', 'match_type')
+    ordering = ('match_date', )
+    readonly_fields = ('winner', )
 
 
 class TennisUserAdmin(UserAdmin):
@@ -38,10 +65,11 @@ class TennisUserAdmin(UserAdmin):
     search_fields = ('first_name', 'last_name', 'email')
     ordering = ('email',)
 
+
+
 # Register your models here.
 admin.site.register(PlayerProfile, PlayerProfileAdmin)
-admin.site.register(Team)
-admin.site.register(Match)
-admin.site.register(Score)
-admin.site.register(Tournament)
+admin.site.register(Team, TeamAdmin)
+admin.site.register(Match, MatchAdmin)
+admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(TennisUser, TennisUserAdmin)

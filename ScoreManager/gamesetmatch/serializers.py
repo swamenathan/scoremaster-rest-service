@@ -110,25 +110,19 @@ class TeamSerializer(serializers.ModelSerializer):
 
     #TODO: Two teams cannot have the same members
 
-class ScoreSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Score
-        fields = '__all__'
-
 
 class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ('match_uuid', 'team_1', 'team_2', 'match_type', 'tournament')
+        fields = '__all__'
         read_only_field = ('match_uuid', )
 
-    def to_representation(self, instance):
-        validated_data = super(MatchSerializer, self).to_representation(instance)
-        score = Score.objects.filter(match=instance)
-        validated_data['score'] = ScoreSerializer(score[0]).data
-        return validated_data
+    # def to_representation(self, instance):
+    #     validated_data = super(MatchSerializer, self).to_representation(instance)
+    #     score = Score.objects.filter(match=instance)
+    #     validated_data['score'] = ScoreSerializer(score[0]).data
+    #     return validated_data
 
 
 class TournamentSerializer(serializers.ModelSerializer):
