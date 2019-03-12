@@ -42,7 +42,7 @@ class MatchAdmin(ImportExportModelAdmin):
 
     resource_class = MatchResource
 
-    list_display = ('match_uuid', 'match_date', 'team_1', 'team_2', 'match_type')
+    list_display = ('match_uuid', 'match_date', 'team_1', 'team_2', 'match_type', 'winner')
     ordering = ('match_date', )
     readonly_fields = ('winner', )
 

@@ -122,32 +122,3 @@ class PlayerList(generics.ListAPIView):
     serializer_class = PlayerProfileSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_fields = ('division', )
-
-
-class ScoreDetailView(APIView):
-
-    authentication_classes = (JSONWebTokenAuthentication, )
-    permission_classes = (VerifiedPermission, )
-
-    def get(self, request, match):
-        score = get_object_or_404(Score, match=match)
-        serializer = ScoreSerializer(instance=score, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class ScoreListView(APIView):
-
-    authentication_classes = (JSONWebTokenAuthentication, )
-    permission_classes = (VerifiedPermission, )
-
-    def get(self, request):
-        score = Score.objects.filter()
-        serializer = ScoreSerializer(score, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = ScoreSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
