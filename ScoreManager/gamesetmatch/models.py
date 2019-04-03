@@ -39,7 +39,10 @@ class Team(models.Model):
              update_fields=None):
         # If Team name is found to be blank set a default value
         if self.team_name == '':
-            self.team_name = self.main_player.first_name + ' Team'
+            if self.partner_player is not None:
+                self.team_name = self.main_player.first_name + ' ' + self.partner_player.first_name + ' Team'
+            else:
+                self.team_name = self.main_player.first_name + ' ' + self.main_player.last_name
         super(Team, self).save()
 
 
