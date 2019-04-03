@@ -84,7 +84,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ('id', 'team_name', 'partner_player')
+        fields = ('id', 'team_name', 'main_player', 'partner_player', 'seeding_points', 'rr_points')
 
     def validate(self, attrs):
         if 'partner_player' in attrs:
@@ -118,18 +118,20 @@ class MatchSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_field = ('match_uuid', )
 
-    # def to_representation(self, instance):
-    #     validated_data = super(MatchSerializer, self).to_representation(instance)
-    #     score = Score.objects.filter(match=instance)
-    #     validated_data['score'] = ScoreSerializer(score[0]).data
-    #     return validated_data
+    def to_representation(self, instance):
+        validated_data = super(MatchSerializer, self).to_representation(instance)
+        team_1 = Team.objects.filter(id=validated_data['team_1'])
+        team_2 = Team.objects.filter(id=validated_data['team_2'])
+        validated_data['team_1_name'] = team_1[0].team_name
+        validated_data['team_2_name'] = team_2[0].team_name
+        return validated_data
 
 
 class TournamentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tournament
-        fields = ('tour_start_date', 'tour_end_date', 'tour_type')
+        fields = '__all__'
 
 
 

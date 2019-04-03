@@ -67,10 +67,16 @@ class Match(models.Model):
     ROUND_ROBIN = 'RR'
     SEEDING = 'SR'
     KNOCKOUT = 'KR'
+    QUARTER = 'QF'
+    SEMI = 'SF'
+    FINAL = 'FF'
     MATCH_TYPE_CHOICES = (
         (ROUND_ROBIN, 'Round Robin'),
         (SEEDING, 'Seeding'),
-        (KNOCKOUT, 'Knockout')
+        (KNOCKOUT, 'Knockout'),
+        (QUARTER, 'Quarter'),
+        (SEMI, 'Semi'),
+        (FINAL, 'Final'),
     )
 
     TEAM_1 = 'T1'

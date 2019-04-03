@@ -8,7 +8,7 @@ from gamesetmatch.serializers import *
 from gamesetmatch.permissions import *
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
+from django.db.models import Q
 
 class PlayerListView(APIView):
     """
@@ -60,8 +60,13 @@ class TeamDetailView(APIView):
     permission_classes = (VerifiedPermission, )
 
     def get(self, request, main_player):
-        team = get_object_or_404(Team, main_player=main_player)
-        serializer = TeamSerializer(instance=team)
+        # team = get_object_or_404(Team, main_player=main_player)
+        team = Team.objects.filter(Q(main_player=main_player) | Q(partner_player=main_player))
+        if len(team) > 1:
+            message = {"message": "A player is present in more than one team"}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+        serializer = TeamSerializer(instance=team[0])
+
         return Response(serializer.data, status.HTTP_200_OK)
 
 
@@ -101,15 +106,34 @@ class MatchListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MatchList(generics.ListAPIView):
+class MatchList(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication, )
     permission_classes = (VerifiedPermission, )
 
-    queryset = Match.objects.all()
-    serializer_class = MatchSerializer
-    filter_backends = (DjangoFilterBackend, )
-    filter_fields = ('team_1', 'team_2', )
+    def get(self, request):
+        query_params = list(request.query_params.values())
+
+        # print('list 1 = ', str(query_params))
+
+        while 'undefined' in query_params:
+            query_params.remove('undefined')
+
+        # print('list 2 = ', str(query_params))
+
+        if len(query_params) > 1:
+            matches = Match.objects.filter(Q(team_1=query_params[0]) & Q(team_2=query_params[1]) | Q(team_1=query_params[1]) & Q(team_2=query_params[0]))
+        elif len(query_params) == 1:
+            matches = Match.objects.filter(Q(team_1=query_params[0]) | Q(team_2=query_params[0]))
+        else:
+            matches = Match.objects.all()
+
+        serializer = MatchSerializer(matches, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # serializer_class = MatchSerializer
+        # filter_backends = (DjangoFilterBackend, )
+        # filter_fields = ('team_1', 'team_2', 'match_type')
 
 
 class PlayerList(generics.ListAPIView):
@@ -122,3 +146,15 @@ class PlayerList(generics.ListAPIView):
     serializer_class = PlayerProfileSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_fields = ('division', )
+
+
+class TournamentListView(APIView):
+
+    authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (VerifiedPermission, )
+
+    def get(self, request):
+        tours = Tournament.objects.all()
+        print('tours = ', tours)
+        serializer = TournamentSerializer(tours, many=True)
+        return Response(serializer.data)

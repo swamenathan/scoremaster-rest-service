@@ -29,6 +29,7 @@ urlpatterns = [
     path('players/<int:pk>', PlayerDetailView.as_view()),
     path('teams/', TeamListView.as_view()),
     path('matches/', MatchListView.as_view()),
+    path('tours/', TournamentListView.as_view()),
     path('match/', MatchList.as_view()),
     path('divplayers/', PlayerList.as_view()),
     path('team/<int:main_player>', TeamDetailView.as_view()),
