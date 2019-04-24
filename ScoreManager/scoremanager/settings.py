@@ -31,12 +31,16 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:4200'
+    'localhost:4200',
+    'ptc-scorer.swamenathan.com',
+    's3-website-ap-southeast-2.amazonaws.com'
 )
 
 ALLOWED_HOSTS = [
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    'django-new-env.7p94kau3mm.us-west-2.elasticbeanstalk.com',
+    'ptc-scorer-admin.swamenathan.com'
 ]
 
 
@@ -170,6 +174,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 
 SITE_ID = 1
 
