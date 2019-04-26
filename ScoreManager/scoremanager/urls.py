@@ -17,9 +17,12 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include, url
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+from django.urls import path, reverse_lazy
+from django.views.generic.base import RedirectView
 from gamesetmatch.views import *
 
 urlpatterns = [
+    path('', RedirectView.as_view(url=reverse_lazy('admin:index'))),
     path('admin/', admin.site.urls),
     path('auth/', include('rest_auth.urls')),
     path('auth/registration/', include('rest_auth.registration.urls')),

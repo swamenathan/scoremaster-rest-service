@@ -44,7 +44,7 @@ class MatchAdmin(ImportExportModelAdmin):
 
     list_display = ('match_uuid', 'match_date', 'team_1', 'team_2', 'match_type', 'winner')
     ordering = ('match_date', )
-    readonly_fields = ('winner', )
+    readonly_fields = ('winner', 'player_id' )
 
 
 class TennisUserAdmin(UserAdmin):

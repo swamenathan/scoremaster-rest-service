@@ -93,6 +93,7 @@ class Match(models.Model):
         (DRAW, 'Draw')
     )
 
+    player_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='player_id', blank=False, default='', null=False)
     match_uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     match_type = models.CharField(max_length=2, choices=MATCH_TYPE_CHOICES, default=SEEDING)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, default='')

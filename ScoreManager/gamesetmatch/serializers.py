@@ -118,6 +118,11 @@ class MatchSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_field = ('match_uuid', )
 
+    def to_internal_value(self, data):
+        validated_data = super(MatchSerializer, self).to_internal_value(data)
+        validated_data['player_id'] = self.context['request'].user
+        return validated_data
+
     def to_representation(self, instance):
         validated_data = super(MatchSerializer, self).to_representation(instance)
         team_1 = Team.objects.filter(id=validated_data['team_1'])
