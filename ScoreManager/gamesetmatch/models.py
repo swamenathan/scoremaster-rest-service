@@ -32,6 +32,10 @@ class Team(models.Model):
     seeding_points = models.FloatField(default=0)
     rr_points = models.FloatField(default=0)
 
+    # TODO: Ordering need to be done in Front End. This is just a temporary ugly hack
+    class Meta:
+        ordering = ['-rr_points']
+
     def __str__(self):
         return self.team_name
 
@@ -93,7 +97,7 @@ class Match(models.Model):
         (DRAW, 'Draw')
     )
 
-    player_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='player_id', blank=False, default='', null=False)
+    player_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='player_id', blank=True, default='', null=True)
     match_uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     match_type = models.CharField(max_length=2, choices=MATCH_TYPE_CHOICES, default=SEEDING)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, default='')
@@ -129,17 +133,18 @@ class Match(models.Model):
             match_in_db = None
 
         if match_in_db is not None:
-            previous_winner = match_in_db.winner
-
-            if previous_winner != self.winner:
-                print('current winner = ', previous_winner)
-                print('self.winner  = ', self.winner)
-                self.previous_winner = previous_winner
+            if match_in_db.team1_set1 != self.team1_set1 or match_in_db.team2_set1 != self.team2_set1:
                 update_fields.append('winner')
                 super(Match, self).save(update_fields=update_fields)
 
         super(Match, self).save()
 
+
+class PreviousScore(models.Model):
+
+    match_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    team1_set1 = models.CharField(max_length=2, blank=True, default='')
+    team2_set1 = models.CharField(max_length=2, blank=True, default='')
 
 
 class UserManager(BaseUserManager):
